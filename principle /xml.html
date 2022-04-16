@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="controls">
+    <input class="xhr success" type="button" name="xhr" value="Click to start XHR (success)" />
+    <input class="xhr error" type="button" name="xhr" value="Click to start XHR (error)" />
+    <input class="xhr abort" type="button" name="xhr" value="Click to start XHR (abort)" />
+</div>
+<a href="javascript: new Date().toLocaleTimeString();">点击</a>
+<a href="javascript: void new Date().toLocaleTimeString();">点击11</a>
+<textarea readonly class="event-log"></textarea>
+<script type="text/javascript">
+
+const xhrButtonSuccess = document.querySelector('.xhr.success');
+const xhrButtonError = document.querySelector('.xhr.error');
+const xhrButtonAbort = document.querySelector('.xhr.abort');
+const log = document.querySelector('.event-log');
+
+function handleEvent(e) {
+    log.textContent = log.textContent + `${e.type}: ${e.loaded} bytes transferred\n`;
+}
+
+function addListeners(xhr) {
+    xhr.addEventListener('readystatechange',handleEvent)
+    // xhr.addEventListener('loadstart', handleEvent);
+    xhr.onloadstart = (e)=>{
+         console.log('验证',e)
+    }
+    xhr.addEventListener('load', handleEvent);
+    xhr.addEventListener('loadend', handleEvent);
+    xhr.addEventListener('progress', handleEvent);
+    xhr.addEventListener('error', handleEvent);
+    xhr.addEventListener('abort', handleEvent);
+   
+}
+
+function runXHR(url) {
+    log.textContent = '';
+
+    const xhr = new XMLHttpRequest();
+   
+    addListeners(xhr);
+    xhr.open("GET", url);
+    xhr.send();
+    return xhr;
+}
+
+xhrButtonSuccess.addEventListener('click', () => {
+    runXHR('https://mdn.mozillademos.org/files/16553/DgsZYJNXcAIPwzy.jpg');
+});
+
+xhrButtonError.addEventListener('click', () => {
+    runXHR('https://somewhere.org/i-dont-exist');
+});
+
+xhrButtonAbort.addEventListener('click', () => {
+    runXHR('https://mdn.mozillademos.org/files/16553/DgsZYJNXcAIPwzy.jpg').abort();
+});
+
+</script>
+</body>
+</html>
